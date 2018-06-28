@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'commander/import'
+require "bundler/setup"
+require "similarwebCLI"
+
+# :name is optional, otherwise uses the basename of this executable
+program :name, 'similarweb CLI'
+program :version, '1.0.0'
+program :description, 'Call the similar web API'
+
+command :traffic do |c|
+  c.syntax = 'sw traffic'
+  c.description = 'call the traffic endpoint, returns a csv as default'
+  c.option '-j', '--json', "Returns json instead of csv"
+  c.option '-i', '--head', "Prints the header row only"
+  c.option '-d', '--domain STRING', String, "domain to query"
+  c.option '-s', '--startDate DATE', String, "Start date, defaults to last month"
+  c.option '-e', '--endDate DATE', String, "End Date,defaults to last month"
+  c.option '-m', '--mainDomain BOOLEAN', String, "True returns data for main domain only, False returns data for subdomains as well."
+  c.option '-g', '--granularity STRING', String, "daily,monthly,weekly"
+
+  c.action do |args, options|
+    defaultDate = Date.today.prev_month.strftime("%Y-%m")
+    options.default :startDate => defaultDate,
+                    :endDate => defaultDate,
+                    :mainDomain => false,
+                    :granularity => "daily"
+
+    client = SimilarwebCLI::Client.new
+    response = client.traffic(options.domain,options.startDate,options.endDate,options.mainDomain,options.granularity)
+    puts response.to_json if options.json
+    exit if options.json
+    puts "'domain','date','visits'" if options.head
+    exit if options.head
+    #if json ius false, print csv
+  end
+end
