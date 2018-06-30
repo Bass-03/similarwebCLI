@@ -9,7 +9,7 @@ module SimilarwebCLI
   class Client
     attr_accessor :apiKey
     def initialize
-      raise 'There is no API key Set, please set ENV["similarwebAPI"]' if !ENV["similarwebAPI"]
+      raise 'There is no API key Set, please set environment variable: similarwebAPI' if !ENV["similarwebAPI"]
       @apiKey = ENV["similarwebAPI"]
     end
     # Gets the traffic (visits) from a single website
@@ -21,8 +21,10 @@ module SimilarwebCLI
     # @param granularity [String] daily,monthly,yearly
     #
     # @return [Hash] Resutls from the similar web trafic endpoint
-    def traffic(domain,dStart,dEnd,mainDomain = false, granularity = "daily")
-      call = HTTP.get("https://api.similarweb.com/v1/website/#{domain}/total-traffic-and-engagement/visits?api_key=#{apiKey}&start_date=#{dStart}&end_date=#{dEnd}&main_domain_only=#{mainDomain}&granularity=#{granularity}")
+    def traffic(domain,dStart,dEnd,mainDomain = false, granularity = "daily",debug = false)
+      query = "https://api.similarweb.com/v1/website/#{domain}/total-traffic-and-engagement/visits?api_key=#{apiKey}&start_date=#{dStart}&end_date=#{dEnd}&main_domain_only=#{mainDomain}&granularity=#{granularity}"
+      puts "getting #{query}" if debug
+      call = HTTP.get(query)
       return JSON.parse(call.body.to_s)
     end
   end
