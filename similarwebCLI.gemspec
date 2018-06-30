@@ -30,7 +30,6 @@ Gem::Specification.new do |spec|
   spec.executables   << "sw"
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "http"
   spec.add_dependency "commander"
 
   spec.add_development_dependency "bundler", "~> 1.16"
